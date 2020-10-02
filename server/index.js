@@ -26,6 +26,21 @@ const accessAPI = async () => {
 
 const connectDatabase = async () => {
 	console.log("connecting to database");
+	console.log(process.env)
+	mongoose.connect(DB_URI, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+		useFindAndModify: false,
+		useCreateIndex: true,
+	});
+
+	mongoose.connection.on(
+		"error",
+		console.error.bind(console, "connection error:")
+	);
+	mongoose.connection.once("open", function () {
+		console.log(`connected to ${DB_URI}`);
+	});
 }
 
 const setupAccessControl = async () => {
