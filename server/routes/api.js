@@ -14,7 +14,17 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
 	console.log("endpoint post");
 	let { name, surname, detail, interests } = req.body;
-	let template = new Template({ name, surname, detail, interests });
+	let interest = await Interest.find({})
+	let allInterests = []
+	interests.forEach((int) => {
+		interest.forEach((ins) => {
+			// console.log(int,ins)
+			if (ins.item == int.item)
+				allInterests.push(ins);
+		})
+	})
+	// console.log(allInterests);
+	let template = new Template({ name, surname, detail, interests:allInterests });
 	await template.save().then((result) => {
 		console.log(result);
 		res.send(result);

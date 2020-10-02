@@ -2,10 +2,10 @@ const { Schema, model } = require("mongoose");
 const Interest = require("./Interest").schema;
 
 const TemplateSchema = new Schema({
-	name: {type:String,required:true},
+	name: { type: String, required: true },
 	surname: { type: String, required: true },
 	detail: { type: String, required: true },
-	interests: [{type:Interest}]
+	interests: [{type: Schema.Types.ObjectId, ref: "Item"}],
 });
 TemplateSchema.statics.getDetail = async function (name,cb) {
 	return await Template.findOne({name:name},cb)
