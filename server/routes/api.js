@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Template = require("../models/Template")
 const Interest = require("../models/Interest");
+
 router.get('/', async (req, res, next) => {
 	console.log("endpoint: get");
 	await Template.getAllTemplates((err, templates) => {
@@ -11,19 +12,18 @@ router.get('/', async (req, res, next) => {
 		res.send(results);
 	});
 })
+
 router.post('/', async (req, res, next) => {
 	console.log("endpoint post");
 	let { name, surname, detail, interests } = req.body;
-	let interest = await Interest.find({})
+	let interestslist = await Interest.find({})
 	let allInterests = []
-	interests.forEach((int) => {
-		interest.forEach((ins) => {
-			// console.log(int,ins)
-			if (ins.item == int.item)
-				allInterests.push(ins);
+	interests.forEach((i_to_a) => {
+		interestslist.forEach((interest) => {
+			if (interest.item == i_to_a.item)
+				allInterests.push(interest);
 		})
 	})
-	// console.log(allInterests);
 	let template = new Template({ name, surname, detail, interests:allInterests });
 	await template.save().then((result) => {
 		console.log(result);
@@ -35,6 +35,7 @@ router.get("/interest", async (req, res, next) => {
 	res.send(interests);
 	console.log(interests);
 });
+
 router.post("/interest", async (req, res, next) => {
 	console.log("endpoint post");
 	let { item } = req.body;
@@ -44,7 +45,9 @@ router.post("/interest", async (req, res, next) => {
 		res.send(result);
 	});
 });
+
 router.put('/:name', async (req, res, next) => {
 	console.log("putting");
+	res.send(req.params.name,req.body)
 })
 module.exports = router;
