@@ -5,7 +5,8 @@ const config = require('./config')
 
 app.use(express.json());
 
-const serverport = config.ports.server;
+const { db,ports,server,client} = config;
+const serverport = ports.server;
 // const DB_USERPASS = DB_PASSWORD && DB_USER ? `${DB_USER}:${DB_PASSWORD}@` : "";
 
 const startServer = async () => {
@@ -27,9 +28,9 @@ const connectDatabase = async () => {
 }
 
 const setupAccessControl = async () => {
-	let limit = config.server.limit
+	let limit = server.limit
 	let methods = ["GET", "HEAD", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"];
-	let domains = [config.client.uri];
+	let domains = [client.uri];
 	// whitelisted domains
 	app.use(
 		cors({
