@@ -10,7 +10,6 @@ app.use(express.json());
 const { db,ports,server,client} = config;
 const serverport = ports.server;
 const DB_USERPASS = db.password && db.user ? `${db.user}:${db.password}@` : "";
-// const DB_USERPASS = DB_PASSWORD && DB_USER ? `${DB_USER}:${DB_PASSWORD}@` : "";
 
 const startServer = async () => {
 	app.listen(serverport, () => {
