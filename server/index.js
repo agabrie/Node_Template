@@ -1,15 +1,16 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
-require("dotenv").config();
+const config = require('./config')
 
-app.use(bodyParser.json());
+app.use(express.json());
 
-const serverport = process.env.SERVER_PORT || 4000;
-const { DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_URI } = process.env;
-const DB_USERPASS = DB_PASSWORD && DB_USER ? `${DB_USER}:${DB_PASSWORD}@` : "";
+
+const { db,ports,server,client} = config;
+const serverport = ports.server;
+const DB_USERPASS = db.password && db.user ? `${db.user}:${db.password}@` : "";
+// const DB_USERPASS = DB_PASSWORD && DB_USER ? `${DB_USER}:${DB_PASSWORD}@` : "";
 
 const startServer = async () => {
 	app.listen(serverport, () => {
@@ -27,7 +28,7 @@ const accessAPI = async () => {
 
 const connectDatabase = async () => {
 	console.log("connecting to database");
-	mongoose.connect(DB_URI, {
+	mongoose.connect(db.uri, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 		useFindAndModify: false,
@@ -39,14 +40,14 @@ const connectDatabase = async () => {
 		console.error.bind(console, "connection error:")
 	);
 	mongoose.connection.once("open", function () {
-		console.log(`connected to ${DB_URI}`);
+		console.log(`connected to ${db.uri}`);
 	});
 }
 
 const setupAccessControl = async () => {
-	let limit = "12mb"
+	let limit = server.limit
 	let methods = ["GET", "HEAD", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"];
-	let domains = [process.env.Client_URI];
+	let domains = [client.uri];
 	// whitelisted domains
 	app.use(
 		cors({
@@ -60,6 +61,7 @@ const setupAccessControl = async () => {
 	
 	// headers accepted
 	app.use(function (req, res, next) {
+		console.log("setting up Access Control Headers");
 		res.header("Access-Control-Allow-Origin", "*");
 		res.header(
 			"Access-Control-Allow-Headers",
@@ -67,12 +69,10 @@ const setupAccessControl = async () => {
 		);
 		next();
 	});
-	console.log("setting up Access Control Headers");
 
 	// fileSize limit from client
-	app.use(bodyParser.json({ limit: limit }));
+	app.use(express.json({ limit: limit }));
 	console.log("Accepted File Size Limit set to :",limit);
-
 }
 
 setupAccessControl();
